@@ -1,0 +1,7 @@
+#!/bin/bash
+
+export TAS_URL=https://example.com/api
+export TAS_CLIENT_KEY=consumer_key
+export TAS_CLIENT_SECRET=secret_key
+export TAS_USERNAME=username
+export TAS_PASSWORD=password
