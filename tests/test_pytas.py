@@ -12,7 +12,7 @@ import os
 import pytest
 import json
 
-from pytas import client
+from pytas.pytas import client
 
 @pytest.fixture
 def tas():
