@@ -23,11 +23,11 @@ class TestTAS:
     def test_auth(self, tas):
         username = os.environ.get('TAS_USERNAME')
         password = os.environ.get('TAS_PASSWORD')
-        resp = tas.authenticate(username, password)
-        assert resp['status'] == 'success', "API call successful"
-        assert resp['result'], "Authentication successful"
+        assert tas.authenticate(username, password)
 
-    def test_authfail(self, tas):
-        resp = tas.authenticate('bad','username')
-        assert resp['status'] == 'error', "API call successful"
-        assert not resp['result'], "Authentication failed"
+    def test_auth_bad_username(self, tas):
+        with pytest.raises(Exception):
+            tas.authenticate('bad','username')
+
+    def test_auth_bad_password(self, tas):
+        assert not tas.authenticate('mrhanlon','badpassword')

@@ -33,7 +33,11 @@ class client:
     def authenticate(self, username, password):
         payload = {'username': username, 'password': password}
         r = requests.post(self.baseURL + '/auth/login', data=payload, auth=self.auth)
-        return r.json()
+        resp = r.json()
+        if resp['status'] == 'success':
+            return resp['result']
+        else:
+            raise Exception('Authentication Error', resp['message'])
 
     """
     Projects
