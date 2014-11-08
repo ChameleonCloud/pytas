@@ -31,3 +31,7 @@ class TestTAS:
 
     def test_auth_bad_password(self, tas):
         assert not tas.authenticate('mrhanlon','badpassword')
+
+    def test_get_user_by_username(self, tas):
+        resp = tas.get_user(username='mrhanlon')
+        assert resp['username'] == 'mrhanlon'
