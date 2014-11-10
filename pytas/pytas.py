@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import json
 import os
+import re
 import requests
 from requests.auth import HTTPBasicAuth
 from suds.client import Client as Suds
@@ -59,12 +60,39 @@ class client:
         else:
             raise Exception('User not found', resp['message'])
 
+    def save_user(self, id, user):
+        if id:
+            url = '{0}/v1/users/{1}'.format( self.baseURL, id )
+            method = 'PUT'
+        else:
+            url = '{0}/v1/users'.format( self.baseURL )
+            method = 'POST'
+
+        r = requests.request( method, url, data=user, auth=self.auth )
+        resp = r.json()
+        if resp['status'] == 'success':
+            return resp['result']
+        else:
+            if id:
+                raise Exception('Unable to save user id=' + id, resp['message'])
+            else:
+                raise Exception('Unable to save new user', resp['message'])
+
+    def verify_user(self, id, code):
+        url = '{0}/v1/users/{1}/{2}'.format( self.baseURL, id, code )
+        r = requests.put( url, auth=self.auth )
+        resp = r.json()
+        if resp['status'] == 'success':
+            return True
+        else:
+            raise Exception('Error verifying user id=' + id, resp['message'])
+
     """
     Data Lists
     Institutions/Departments
     """
     def institutions(self):
-        url = self.baseURL.replace('/api', '/TASWebService/PortalService.asmx?wsdl')
+        url = re.sub(r'/api[\-a-z]*$', '/TASWebService/PortalService.asmx?wsdl', self.baseURL)
         api = Suds(url, username=self.credentials['username'], password=self.credentials['password'])
         resp = api.service.GetInstitutions()
         institutions = []
@@ -98,7 +126,7 @@ class client:
         return depts
 
     def countries(self):
-        url = self.baseURL.replace('/api', '/TASWebService/PortalService.asmx?wsdl')
+        url = re.sub(r'/api[\-a-z]*$', '/TASWebService/PortalService.asmx?wsdl', self.baseURL)
         api = Suds(url, username=self.credentials['username'], password=self.credentials['password'])
         resp = api.service.GetCountries()
         countries = []

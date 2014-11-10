@@ -35,3 +35,11 @@ class TestTAS:
     def test_get_user_by_username(self, tas):
         resp = tas.get_user(username='mrhanlon')
         assert resp['username'] == 'mrhanlon'
+
+    def test_get_institutions(self, tas):
+        resp = tas.institutions()
+        assert resp is not None
+
+    def test_get_countries(self, tas):
+        resp = tas.countries()
+        assert resp is not None
