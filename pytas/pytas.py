@@ -74,7 +74,7 @@ class client:
             return resp['result']
         else:
             if id:
-                raise Exception('Unable to save user id=' + id, resp['message'])
+                raise Exception( 'Unable to save user id={0}'.format( id ), resp['message'] )
             else:
                 raise Exception('Unable to save new user', resp['message'])
 
@@ -85,7 +85,7 @@ class client:
         if resp['status'] == 'success':
             return True
         else:
-            raise Exception('Error verifying user id=' + id, resp['message'])
+            raise Exception( 'Error verifying user id={0}'.format( id ), resp['message'] )
 
     """
     Data Lists
@@ -144,10 +144,10 @@ class client:
     """
     def project(self, id):
         headers = { 'content-type':'application/json' }
-        r = requests.get(self.baseURL + '/tup/projects/' + id, headers=headers, auth=self.auth)
+        r = requests.get('{0}/tup/projects/{1}'.format(self.baseURL, id), headers=headers, auth=self.auth)
         return r.json()
 
     def projectsForUser(self, username):
         headers = { 'content-type':'application/json' }
-        r = requests.get(self.baseURL + '/tup/projects/username/' + username, headers=headers, auth=self.auth)
+        r = requests.get('{0}/tup/projects/username/{1}'.format(self.baseURL, username), headers=headers, auth=self.auth)
         return r.json()
