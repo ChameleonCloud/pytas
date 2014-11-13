@@ -28,6 +28,11 @@ if sys.argv[-1] == 'publish':
 
 readme = open('README.rst').read()
 
+requires = [
+    'requests',
+    'suds'
+]
+
 setup(
     name='pytas',
     version='0.1.0',
@@ -42,8 +47,7 @@ setup(
     package_dir={'pytas':
                  'pytas'},
     include_package_data=True,
-    install_requires=[
-    ],
+    install_requires=requires,
     license="MIT",
     zip_safe=False,
     keywords='pytas',
