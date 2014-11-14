@@ -177,5 +177,5 @@ class client:
     def request_allocation( self, user_id, project_id, resource_id, justification, sus_requested ):
         url = re.sub( r'/api[\-a-z]*$', '/TASWebService/PortalService.asmx?wsdl', self.baseURL )
         api = Suds( url, username=self.credentials['username'], password=self.credentials['password'] )
-        api.service.RequestComputeAllocation( user_id, project_id, resource_id, justification, sus_requested, 0, [0,] )
+        api.service.RequestComputeAllocation( user_id, project_id, resource_id, justification, sus_requested, 0, (0) )
         return True
