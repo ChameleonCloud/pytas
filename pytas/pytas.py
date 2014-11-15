@@ -156,6 +156,12 @@ class client:
         resp = r.json()
         return resp['result']
 
+    def project_allocations( self, id ):
+        headers = { 'content-type':'application/json' }
+        r = requests.get( '{0}/tup/projects/{1}/allocations'.format(self.baseURL, id), headers=headers, auth=self.auth )
+        resp = r.json()
+        return resp['result']
+
     def projects_for_user( self, username ):
         headers = { 'content-type':'application/json' }
         r = requests.get( '{0}/tup/projects/username/{1}'.format(self.baseURL, username), headers=headers, auth=self.auth )
