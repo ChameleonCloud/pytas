@@ -91,8 +91,10 @@ class client:
         url = '{0}/v1/users/{1}/passwordResets'.format( self.baseURL, username )
         r = requests.post( url, data='', auth=self.auth )
         resp = r.json()
-        print resp
-        return True
+        if resp['status'] == 'success':
+            return True
+        else:
+            raise Exception( 'Error requesting password reset for user={0}'.format( username ), resp['message'] )
 
     def confirm_password_reset( self, username, code, new_password ):
         url = '{0}/v1/users/{1}/passwordResets/{2}'.format( self.baseURL, username, code )
@@ -102,7 +104,10 @@ class client:
         r = requests.post( url, data=body, auth=self.auth )
         resp = r.json()
         print resp
-        return True
+        if resp['status'] == 'success':
+            return True
+        else:
+            raise Exception( 'Failed password reset for user={0}'.format( username ), resp['message'] )
 
     """
     Data Lists
