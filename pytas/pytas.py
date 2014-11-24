@@ -157,14 +157,48 @@ class client:
         return countries
 
     """
+    Fields
+    """
+    def fields( self ):
+        r = requests.get( '{0}/tup/projects/fields'.format(self.baseURL), auth=self.auth )
+        resp = r.json()
+        return resp[ 'result' ]
+
+    """
     Projects
     """
-    def project(self, id):
+    def project( self, id ):
         headers = { 'content-type':'application/json' }
-        r = requests.get('{0}/tup/projects/{1}'.format(self.baseURL, id), headers=headers, auth=self.auth)
-        return r.json()
+        r = requests.get( '{0}/tup/projects/{1}'.format(self.baseURL, id), headers=headers, auth=self.auth )
+        resp = r.json()
+        return resp['result']
 
-    def projectsForUser(self, username):
+    def project_allocations( self, id ):
         headers = { 'content-type':'application/json' }
-        r = requests.get('{0}/tup/projects/username/{1}'.format(self.baseURL, username), headers=headers, auth=self.auth)
-        return r.json()
+        r = requests.get( '{0}/tup/projects/{1}/allocations'.format(self.baseURL, id), headers=headers, auth=self.auth )
+        resp = r.json()
+        return resp['result']
+
+    def projects_for_user( self, username ):
+        headers = { 'content-type':'application/json' }
+        r = requests.get( '{0}/tup/projects/username/{1}'.format(self.baseURL, username), headers=headers, auth=self.auth )
+        resp = r.json()
+        return resp['result']
+
+    def create_project( self, project_code, project_type, field_of_science, project_title, project_abstract, pi_user_id ):
+        url = re.sub( r'/api[\-a-z]*$', '/TASWebService/PortalService.asmx?wsdl', self.baseURL )
+        api = Suds( url, username=self.credentials['username'], password=self.credentials['password'] )
+        project_id = api.service.CreateProject( project_code, project_type, field_of_science, 0, project_abstract, project_title, pi_user_id )
+        return project_id
+
+    def edit_project( self, project_id, project_code, field_of_science, project_title, project_abstract ):
+        url = re.sub( r'/api[\-a-z]*$', '/TASWebService/PortalService.asmx?wsdl', self.baseURL )
+        api = Suds( url, username=self.credentials['username'], password=self.credentials['password'] )
+        api.service.EditProject( project_id, project_code, field_of_science, 0, project_abstract, project_title )
+        return True
+
+    def request_allocation( self, user_id, project_id, resource_id, justification, sus_requested ):
+        url = re.sub( r'/api[\-a-z]*$', '/TASWebService/PortalService.asmx?wsdl', self.baseURL )
+        api = Suds( url, username=self.credentials['username'], password=self.credentials['password'] )
+        api.service.RequestComputeAllocation( user_id, project_id, resource_id, justification, sus_requested, 0, (0) )
+        return True
