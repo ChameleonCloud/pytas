@@ -87,6 +87,23 @@ class client:
         else:
             raise Exception( 'Error verifying user id={0}'.format( id ), resp['message'] )
 
+    def request_password_reset( self, username ):
+        url = '{0}/v1/users/{1}/passwordResets'.format( self.baseURL, username )
+        r = requests.post( url, data='', auth=self.auth )
+        resp = r.json()
+        print resp
+        return True
+
+    def confirm_password_reset( self, username, code, new_password ):
+        url = '{0}/v1/users/{1}/passwordResets/{2}'.format( self.baseURL, username, code )
+        body = {
+            'password': new_password
+        }
+        r = requests.post( url, data=body, auth=self.auth )
+        resp = r.json()
+        print resp
+        return True
+
     """
     Data Lists
     Institutions/Departments
