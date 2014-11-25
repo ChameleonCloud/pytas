@@ -173,37 +173,90 @@ class client:
     Projects
     """
     def project( self, id ):
-        headers = { 'content-type':'application/json' }
-        r = requests.get( '{0}/tup/projects/{1}'.format(self.baseURL, id), headers=headers, auth=self.auth )
-        resp = r.json()
-        return resp['result']
-
-    def project_allocations( self, id ):
-        headers = { 'content-type':'application/json' }
-        r = requests.get( '{0}/tup/projects/{1}/allocations'.format(self.baseURL, id), headers=headers, auth=self.auth )
+        headers = { 'Content-Type':'application/json' }
+        r = requests.get( '{0}/v1/projects/{1}'.format(self.baseURL, id), headers=headers, auth=self.auth )
         resp = r.json()
         return resp['result']
 
     def projects_for_user( self, username ):
-        headers = { 'content-type':'application/json' }
-        r = requests.get( '{0}/tup/projects/username/{1}'.format(self.baseURL, username), headers=headers, auth=self.auth )
+        headers = { 'Content-Type':'application/json' }
+        r = requests.get( '{0}/v1/projects/username/{1}'.format(self.baseURL, username), headers=headers, auth=self.auth )
         resp = r.json()
         return resp['result']
 
-    def create_project( self, project_code, project_type, field_of_science, project_title, project_abstract, pi_user_id ):
-        url = re.sub( r'/api[\-a-z]*$', '/TASWebService/PortalService.asmx?wsdl', self.baseURL )
-        api = Suds( url, username=self.credentials['username'], password=self.credentials['password'] )
-        project_id = api.service.CreateProject( project_code, project_type, field_of_science, 0, project_abstract, project_title, pi_user_id )
-        return project_id
+    """
+    Project is a dict with:
+    {
+        'title': string, # project title
+        'typeId': number, # project type; 0=Research, 2=Startup
+        'description': string, # project abstract
+        'source': string, # project source, e.g. Chameleon
+        'fieldId': number, # project field of science
+        'piId': number, # PI user ID
+        'allocations': [ # optional list of requested allocations
+            {
+                'resourceId': number, # resource ID
+                'requestorId': number, # user ID making request
+                'justification': string,
+                'dateRequested': datetime,
+                'computeRequested': number # SUs
+            },
+        ]
+    }
+    """
+    def create_project( self, project ):
+        url = '{0}/v1/projects'.format( self.baseURL )
+        headers = { 'Content-Type':'application/json' }
+        r = requests.post( url, data=json.dumps( project ), auth=self.auth, headers=headers )
+        resp = r.json()
+        if resp['status'] == 'success':
+            return resp['result']
+        else:
+            raise Exception( 'Failed to create project', resp['message'] )
 
-    def edit_project( self, project_id, project_code, field_of_science, project_title, project_abstract ):
-        url = re.sub( r'/api[\-a-z]*$', '/TASWebService/PortalService.asmx?wsdl', self.baseURL )
-        api = Suds( url, username=self.credentials['username'], password=self.credentials['password'] )
-        api.service.EditProject( project_id, project_code, field_of_science, 0, project_abstract, project_title )
-        return True
+    def edit_project( self, project ):
+        url = '{0}/v1/projects/{1}'.format( self.baseURL, project['id'] )
+        headers = { 'Content-Type':'application/json' }
+        r = requests.put( url, data=json.dumps( project ), auth=self.auth, headers=headers )
+        resp = r.json()
+        if resp['status'] == 'success':
+            return resp['result']
+        else:
+            raise Exception( 'Failed to update project', resp['message'] )
 
-    def request_allocation( self, user_id, project_id, resource_id, justification, sus_requested ):
-        url = re.sub( r'/api[\-a-z]*$', '/TASWebService/PortalService.asmx?wsdl', self.baseURL )
-        api = Suds( url, username=self.credentials['username'], password=self.credentials['password'] )
-        api.service.RequestComputeAllocation( user_id, project_id, resource_id, justification, sus_requested, 0, (0) )
-        return True
+    def edit_allocation( self, allocation ):
+        url = '{0}/v1/allocations/{1}'.format( self.baseURL, allocation['id'] )
+        headers = { 'Content-Type':'application/json' }
+        r = requests.put( url, data=json.dumps( allocation ), auth=self.auth, headers=headers )
+        resp = r.json()
+        if resp['status'] == 'success':
+            return resp['result']
+        else:
+            raise Exception( 'Failed to update allocation', resp['message'] )
+
+    """
+    Project Users
+    """
+    def get_project_users( self, project_id ):
+        r = requests.get( '{0}/v1/projects/{1}/users'.format( self.baseURL, project_id ), auth=self.auth )
+        resp = r.json()
+        if resp['status'] == 'success':
+            return resp['result']
+        else:
+            raise Exception( 'Failed to get project users', resp['message'] )
+
+    def add_project_user( self, project_id, username ):
+        r = requests.post( '{0}/v1/projects/{1}/users/{2}'.format( self.baseURL, project_id, username ), auth=self.auth )
+        resp = r.json()
+        if resp['status'] == 'success':
+            return True
+        else:
+            raise Exception( 'Failed to add user to project', resp['message'] )
+
+    def del_project_user( self, project_id, username ):
+        r = requests.delete( '{0}/v1/projects/{1}/users/{2}'.format( self.baseURL, project_id, username ), auth=self.auth )
+        resp = r.json()
+        if resp['status'] == 'success':
+            return True
+        else:
+            raise Exception( 'Failed to remove user from project', resp['message'] )
