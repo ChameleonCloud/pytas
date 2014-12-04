@@ -92,7 +92,7 @@ class client:
         r = requests.post( url, data='', auth=self.auth )
         resp = r.json()
         if resp['status'] == 'success':
-            return True
+            return resp['result']
         else:
             raise Exception( 'Error requesting password reset for user={0}'.format( username ), resp['message'] )
 
@@ -102,12 +102,14 @@ class client:
             'password': new_password
         }
         r = requests.post( url, data=body, auth=self.auth )
-        resp = r.json()
-        print resp
-        if resp['status'] == 'success':
-            return True
+        if r.status_code == 200:
+            resp = r.json()
+            if resp['status'] == 'success':
+                return True
+            else:
+                raise Exception( 'Failed password reset for user={0}'.format( username ), resp['message'] )
         else:
-            raise Exception( 'Failed password reset for user={0}'.format( username ), resp['message'] )
+            raise Exception( 'Failed password reset for user={0}'.format( username ), 'Server Error' )
 
     """
     Data Lists
