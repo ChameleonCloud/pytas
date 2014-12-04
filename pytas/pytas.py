@@ -35,7 +35,8 @@ class client:
     """
     def authenticate(self, username, password):
         payload = {'username': username, 'password': password}
-        r = requests.post(self.baseURL + '/auth/login', data=payload, auth=self.auth)
+        headers = { 'Content-Type':'application/json' }
+        r = requests.post(self.baseURL + '/auth/login', data=json.dumps( payload ), auth=self.auth, headers=headers)
         resp = r.json()
         if resp['status'] == 'success':
             return resp['result']
@@ -68,7 +69,8 @@ class client:
             url = '{0}/v1/users'.format( self.baseURL )
             method = 'POST'
 
-        r = requests.request( method, url, data=user, auth=self.auth )
+        headers = { 'Content-Type':'application/json' }
+        r = requests.request( method, url, data=json.dumps( user ), auth=self.auth, headers=headers )
         resp = r.json()
         if resp['status'] == 'success':
             return resp['result']
@@ -87,9 +89,12 @@ class client:
         else:
             raise Exception( 'Error verifying user id={0}'.format( id ), resp['message'] )
 
-    def request_password_reset( self, username ):
-        url = '{0}/v1/users/{1}/passwordResets'.format( self.baseURL, username )
-        r = requests.post( url, data='', auth=self.auth )
+    def request_password_reset( self, username, source=None ):
+        if source:
+            url = '{0}/v1/users/{1}/passwordResets?source={2}'.format( self.baseURL, username, source )
+        else:
+            url = '{0}/v1/users/{1}/passwordResets'.format( self.baseURL, username )
+        r = requests.post( url, auth=self.auth )
         resp = r.json()
         if resp['status'] == 'success':
             return resp['result']
@@ -101,9 +106,11 @@ class client:
         body = {
             'password': new_password
         }
-        r = requests.post( url, data=body, auth=self.auth )
+        headers = { 'Content-Type':'application/json' }
+        r = requests.post( url, data=json.dumps( body ), auth=self.auth, headers=headers )
         if r.status_code == 200:
             resp = r.json()
+            print resp
             if resp['status'] == 'success':
                 return True
             else:
