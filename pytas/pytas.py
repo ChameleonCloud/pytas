@@ -101,8 +101,11 @@ class client:
         else:
             raise Exception( 'Error requesting password reset for user={0}'.format( username ), resp['message'] )
 
-    def confirm_password_reset( self, username, code, new_password ):
-        url = '{0}/v1/users/{1}/passwordResets/{2}'.format( self.baseURL, username, code )
+    def confirm_password_reset( self, username, code, new_password, source=None  ):
+        if source:
+            url = '{0}/v1/users/{1}/passwordResets/{2}?source={3}'.format( self.baseURL, username, code, source )
+        else:
+            url = '{0}/v1/users/{1}/passwordResets/{2}'.format( self.baseURL, username, code )
         body = {
             'password': new_password
         }
