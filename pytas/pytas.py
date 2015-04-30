@@ -159,6 +159,80 @@ class client:
 
         return depts
 
+    def institution_by_id(self, institution_id):
+        url = '{0}/v1/institutions/{1}'.format( self.baseURL, institution_id )
+
+        headers = { 'Content-Type':'application/json' }
+
+        r = requests.post( url, auth=self.auth, headers=headers )
+        if r.status_code == 200:
+            resp = r.json()
+            print resp
+            if resp['status'] == 'success':
+                inst = {
+                    'id': resp['result']['id'],
+                    'name': resp['result']['name'],
+                    'children': self._departments(resp['result']['departments'])
+                }
+
+                return inst
+            else:
+                raise Exception( 'Failed to fetch institution for id={0}'.format( institution_id ), resp['message'] )
+        else:
+            raise Exception( 'Failed to fetch institution for id={0}'.format( institution_id ), 'Server error' )
+
+        return None
+
+    def departments_by_id(self, institution_id):
+        url = '{0}/v1/institutions/{1}/departments'.format( self.baseURL, institution_id )
+
+        headers = { 'Content-Type':'application/json' }
+
+        r = requests.post( url, auth=self.auth, headers=headers )
+        if r.status_code == 200:
+            resp = r.json()
+            if resp['status'] == 'success':
+                return self._departments(resp['result'])
+
+    def department_by_id(self, institution_id, department_id):
+        departments = self.departments_by_id(institution_id)
+
+        for dept in departments:
+            if dept.id == department_id:
+                return dept
+
+        return None
+
+    # Temporary function until the endpoints are working
+    def institution(self, institution_id):
+        inst = {}
+        for inst in self.institutions():
+            if inst['id'] == institution_id:
+                return inst
+
+        return inst
+
+    def department(self, institution_id, department_id):
+        dept = {}
+        inst = self.institution(institution_id)
+        for dept in inst['children']:
+            if dept['id'] == department_id:
+                return dept
+
+        return dept
+
+
+    def _departments(self, departments):
+        depts = []
+
+        for dept in departments:
+            depts.append({
+                'id': dept['id'],
+                'name': dept['name']
+            })
+
+        return depts
+
     def countries(self):
         url = re.sub(r'/api[\-a-z]*$', '/TASWebService/PortalService.asmx?wsdl', self.baseURL)
         api = Suds(url, username=self.credentials['username'], password=self.credentials['password'])
