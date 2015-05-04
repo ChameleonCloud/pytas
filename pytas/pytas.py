@@ -159,6 +159,24 @@ class client:
 
         return depts
 
+        # Temporary function until the endpoints are working
+    def get_institution(self, institution_id):
+        inst = {}
+        for inst in self.institutions():
+            if inst['id'] == institution_id:
+                return inst
+
+        return inst
+
+    def get_department(self, institution_id, department_id):
+        dept = {}
+        inst = self.get_institution(institution_id)
+        for dept in inst['children']:
+            if dept['id'] == department_id:
+                return dept
+
+        return dept
+
     def institution_by_id(self, institution_id):
         url = '{0}/v1/institutions/{1}'.format( self.baseURL, institution_id )
 
@@ -202,24 +220,6 @@ class client:
                 return dept
 
         return None
-
-    # Temporary function until the endpoints are working
-    def institution(self, institution_id):
-        inst = {}
-        for inst in self.institutions():
-            if inst['id'] == institution_id:
-                return inst
-
-        return inst
-
-    def department(self, institution_id, department_id):
-        dept = {}
-        inst = self.institution(institution_id)
-        for dept in inst['children']:
-            if dept['id'] == department_id:
-                return dept
-
-        return dept
 
 
     def _departments(self, departments):
