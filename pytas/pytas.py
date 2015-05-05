@@ -159,33 +159,14 @@ class client:
 
         return depts
 
-        # Temporary function until the endpoints are working
     def get_institution(self, institution_id):
-        inst = {}
-        for inst in self.institutions():
-            if inst['id'] == institution_id:
-                return inst
-
-        return inst
-
-    def get_department(self, institution_id, department_id):
-        dept = {}
-        inst = self.get_institution(institution_id)
-        for dept in inst['children']:
-            if dept['id'] == department_id:
-                return dept
-
-        return dept
-
-    def institution_by_id(self, institution_id):
         url = '{0}/v1/institutions/{1}'.format( self.baseURL, institution_id )
 
         headers = { 'Content-Type':'application/json' }
 
-        r = requests.post( url, auth=self.auth, headers=headers )
+        r = requests.get( url, auth=self.auth, headers=headers )
         if r.status_code == 200:
             resp = r.json()
-            print resp
             if resp['status'] == 'success':
                 inst = {
                     'id': resp['result']['id'],
@@ -199,24 +180,22 @@ class client:
         else:
             raise Exception( 'Failed to fetch institution for id={0}'.format( institution_id ), 'Server error' )
 
-        return None
-
-    def departments_by_id(self, institution_id):
+    def get_departments(self, institution_id):
         url = '{0}/v1/institutions/{1}/departments'.format( self.baseURL, institution_id )
 
         headers = { 'Content-Type':'application/json' }
 
-        r = requests.post( url, auth=self.auth, headers=headers )
+        r = requests.get( url, auth=self.auth, headers=headers )
         if r.status_code == 200:
             resp = r.json()
             if resp['status'] == 'success':
                 return self._departments(resp['result'])
 
-    def department_by_id(self, institution_id, department_id):
-        departments = self.departments_by_id(institution_id)
+    def get_department(self, institution_id, department_id):
+        departments = self.get_departments(institution_id)
 
         for dept in departments:
-            if dept.id == department_id:
+            if dept['id'] == department_id:
                 return dept
 
         return None

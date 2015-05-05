@@ -41,13 +41,15 @@ class TestTAS:
         assert resp is not None
 
     def test_get_institution_by_id(self, tas):
-        #resp = tas.institution_by_id('1')
-        resp = tas.institution("1")
+        resp = tas.get_institution(1)
         assert resp is not None
 
     def test_get_institution_departments_by_id(self, tas):
-        #resp = tas.departments_by_id('1')
-        resp = tas.department("1", "127")
+        resp = tas.get_departments(1)
+        assert resp is not None
+
+    def test_get_department_by_id(self, tas):
+        resp = tas.get_department(1, 127)
         assert resp is not None
 
     def test_get_countries(self, tas):
