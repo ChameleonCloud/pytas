@@ -184,6 +184,15 @@ class client:
     """
     Projects
     """
+    def projects( self ):
+        headers = { 'Content-Type':'application/json' }
+        r = requests.get( '{0}/v1/projects/group/Chameleon'.format(self.baseURL), headers=headers, auth=self.auth )
+        resp = r.json()
+        if resp['status'] == 'success':
+            return resp['result']
+        else:
+            raise Exception('Projects not found', resp['message'])
+
     def project( self, id ):
         headers = { 'Content-Type':'application/json' }
         r = requests.get( '{0}/v1/projects/{1}'.format(self.baseURL, id), headers=headers, auth=self.auth )
@@ -272,3 +281,16 @@ class client:
             return True
         else:
             raise Exception( 'Failed to remove user from project', resp['message'] )
+    """
+    Allocation
+    """
+    def allocation_approval(self, id, allocation):
+        url = '{0}/v1/allocations/{1}'.format( self.baseURL, id )
+        method = 'PUT'
+        headers = { 'Content-Type':'application/json' }
+        r = requests.request( method, url, data=json.dumps( allocation ), auth=self.auth, headers=headers )
+        resp = r.json()
+        if resp['status'] == 'success':
+            return resp['result']
+        else:
+            raise Exception( 'Unable to process allocation approval for allocation id:'.format( id ), resp['message'] )
