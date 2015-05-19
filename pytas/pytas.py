@@ -159,6 +159,59 @@ class client:
 
         return depts
 
+    def get_institution(self, institution_id):
+        url = '{0}/v1/institutions/{1}'.format( self.baseURL, institution_id )
+
+        headers = { 'Content-Type':'application/json' }
+
+        r = requests.get( url, auth=self.auth, headers=headers )
+        if r.status_code == 200:
+            resp = r.json()
+            if resp['status'] == 'success':
+                inst = {
+                    'id': resp['result']['id'],
+                    'name': resp['result']['name'],
+                    'children': self._departments(resp['result']['departments'])
+                }
+
+                return inst
+            else:
+                raise Exception( 'Failed to fetch institution for id={0}'.format( institution_id ), resp['message'] )
+        else:
+            raise Exception( 'Failed to fetch institution for id={0}'.format( institution_id ), 'Server error' )
+
+    def get_departments(self, institution_id):
+        url = '{0}/v1/institutions/{1}/departments'.format( self.baseURL, institution_id )
+
+        headers = { 'Content-Type':'application/json' }
+
+        r = requests.get( url, auth=self.auth, headers=headers )
+        if r.status_code == 200:
+            resp = r.json()
+            if resp['status'] == 'success':
+                return self._departments(resp['result'])
+
+    def get_department(self, institution_id, department_id):
+        departments = self.get_departments(institution_id)
+
+        for dept in departments:
+            if dept['id'] == department_id:
+                return dept
+
+        return None
+
+
+    def _departments(self, departments):
+        depts = []
+
+        for dept in departments:
+            depts.append({
+                'id': dept['id'],
+                'name': dept['name']
+            })
+
+        return depts
+
     def countries(self):
         url = re.sub(r'/api[\-a-z]*$', '/TASWebService/PortalService.asmx?wsdl', self.baseURL)
         api = Suds(url, username=self.credentials['username'], password=self.credentials['password'])
