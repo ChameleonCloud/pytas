@@ -237,9 +237,9 @@ class client:
     """
     Projects
     """
-    def projects( self ):
-        headers = { 'Content-Type':'application/json' }
-        r = requests.get( '{0}/v1/projects/group/Chameleon'.format(self.baseURL), headers=headers, auth=self.auth )
+    def projects_for_group(self, group):
+        headers = {'Content-Type':'application/json'}
+        r = requests.get( '{0}/v1/projects/group/{1}'.format(self.baseURL, group), headers=headers, auth=self.auth )
         resp = r.json()
         if resp['status'] == 'success':
             return resp['result']
