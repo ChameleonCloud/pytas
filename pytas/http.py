@@ -10,7 +10,7 @@ from suds.client import Client as Suds
 """
 Client class for the TAS REST APIs.
 """
-class client:
+class TASClient:
 
     """
     Instantiate the API Object with a base URI and service account credentials.
