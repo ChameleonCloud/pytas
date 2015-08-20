@@ -12,11 +12,11 @@ import os
 import pytest
 import json
 
-from pytas.pytas import client
+from pytas.http import TASClient
 
 @pytest.fixture
 def tas():
-    return client()
+    return TASClient()
 
 class TestTAS:
 
