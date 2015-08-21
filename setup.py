@@ -30,7 +30,7 @@ readme = open('README.rst').read()
 
 requires = [
     'requests',
-    'suds'
+    'suds',
 ]
 
 setup(
