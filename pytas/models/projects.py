@@ -3,8 +3,8 @@
 #
 #
 ###
-from .base import TASModel
-from .users import User
+import base
+import users
 from pytas.http import TASClient
 
 PROJECT_TYPES = (
@@ -15,7 +15,7 @@ PROJECT_TYPES = (
     (6, 'Partner'),
 )
 
-class Project(TASModel):
+class Project(base.TASModel):
     _resource_uri = 'projects/'
     _fields = [
         'id',
@@ -28,16 +28,24 @@ class Project(TASModel):
         'allocations',
     ]
 
-    def __init__(self, **data):
-        super(Project, self).__init__()
+    def __populate(self, data):
         self.__dict__.update(data)
 
-        self.pi = User(**data['pi'])
+        self.pi = users.User(initial=data['pi'])
 
         allocations = []
         for alloc in data['allocations']:
-            allocations.append(Allocation(**alloc))
+            allocations.append(Allocation(initial=alloc))
         self.allocations = allocations
+
+    def __init__(self, id=None, initial={}):
+        super(Project, self).__init__()
+        if id is not None:
+            api = TASClient()
+            remote_data = api.project(id)
+            self.__populate(remote_data)
+        else:
+            self.__populate(initial)
 
     def __str__(self):
         return getattr(self, 'chargeCode', '<new project>')
@@ -61,24 +69,16 @@ class Project(TASModel):
             data = api.projects_for_group(group)
         return list(cls(**d) for d in data)
 
-    @classmethod
-    def get(cls, project_id):
-        """
-        Returns a project by ID.
-        """
-        api = TASClient()
-        data = api.project(project_id)
-        return cls(**data)
-
     def save(self):
         api = TASClient()
         if self.is_new():
-            api.create_project(self.as_dict())
+            created = api.create_project(self.as_dict())
+            self.__populate(initial=created)
 
     def get_users(self):
         api = TASClient()
         user_data = api.get_project_users(self.id)
-        return list(User(**u) for u in user_data)
+        return list(users.User(initial=u) for u in user_data)
 
     def add_user(self, username):
         api = TASClient()
@@ -90,7 +90,7 @@ class Project(TASModel):
 
 
 
-class Allocation(TASModel):
+class Allocation(base.TASModel):
     _resource_uri = 'allocations/'
     _fields = [
         'computeAllocated',
@@ -117,8 +117,11 @@ class Allocation(TASModel):
         'storageRequested',
     ]
 
-    def __init__(self, **data):
+    def __init__(self, initial={}):
         super(Allocation, self).__init__()
+        self.__populate(initial)
+
+    def __populate(self, data):
         self.__dict__.update(data)
 
 

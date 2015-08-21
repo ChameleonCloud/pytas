@@ -6,6 +6,9 @@ import re
 import requests
 from requests.auth import HTTPBasicAuth
 from suds.client import Client as Suds
+import logging
+
+logger = logging.getLogger(__name__)
 
 """
 Client class for the TAS REST APIs.
@@ -113,7 +116,6 @@ class TASClient:
         r = requests.post( url, data=json.dumps( body ), auth=self.auth, headers=headers )
         if r.status_code == 200:
             resp = r.json()
-            print resp
             if resp['status'] == 'success':
                 return True
             else:
