@@ -128,22 +128,16 @@ class TASClient:
     Institutions/Departments
     """
     def institutions(self):
-        url = re.sub(r'/api[\-a-z]*$', '/TASWebService/PortalService.asmx?wsdl', self.baseURL)
-        api = Suds(url, username=self.credentials['username'], password=self.credentials['password'])
-        resp = api.service.GetInstitutions()
-        institutions = []
-        for i in resp.Institution:
-            if i.Validated:
-                inst = {
-                    'id': i.ID,
-                    'name': i.Name,
-                    'active': i.Selectable,
-                    'children': self._get_departments(i)
-                }
-
-                institutions.append(inst)
-
-        return institutions
+        url = '{0}/v1/institutions/'.format(self.baseURL)
+        r = requests.get(url, auth=self.auth, headers={'Content-Type':'application/json'})
+        if r.status_code == 200:
+            resp = r.json()
+            if resp['status'] == 'success':
+                return resp['result']
+            else:
+                raise Exception('Failed to fetch institution list: %s' % resp['message'])
+        else:
+            raise Exception('Failed to fetch institution list: %s' % 'Server error')
 
     def _get_departments(self, institution):
         depts = []
@@ -193,14 +187,9 @@ class TASClient:
             if resp['status'] == 'success':
                 return self._departments(resp['result'])
 
+
     def get_department(self, institution_id, department_id):
-        departments = self.get_departments(institution_id)
-
-        for dept in departments:
-            if dept['id'] == department_id:
-                return dept
-
-        return None
+        return get_institution(department_id)
 
 
     def _departments(self, departments):
