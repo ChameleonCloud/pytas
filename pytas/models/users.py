@@ -25,6 +25,12 @@ class User(base.TASModel):
     def __populate(self, data):
         self.__dict__.update(data)
 
+    @classmethod
+    def authenticate(cls, username, password):
+        api = TASClient()
+        if api.authenticate(username, password):
+            return cls(initial=api.get_user(username=username))
+
     @property
     def projects(self):
         _projects = []
@@ -39,10 +45,21 @@ class User(base.TASModel):
         pass
 
     def request_password_reset(self, source=None):
-        pass
+        if self.username:
+            api = TASClient()
+            return api.request_password_reset(self.username, source)
+        else:
+            raise Exception('Cannot reset password: username is not set')
 
     def confirm_password_reset(self, code, new_password, source=None):
-        pass
+        if self.username:
+            api = TASClient()
+            return api.confirm_password_reset(self.username, code, new_password, source)
+        else:
+            raise Exception('Cannot reset password: username is not set')
 
     def verify_user(self, code):
-        pass
+        api = TASClient()
+        if api.verify_user(code):
+            return True
+        return False
