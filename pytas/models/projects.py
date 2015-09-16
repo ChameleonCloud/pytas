@@ -67,7 +67,7 @@ class Project(base.TASModel):
             data = api.projects_for_user(username)
         elif group:
             data = api.projects_for_group(group)
-        return list(cls(**d) for d in data)
+        return list(cls(initial=d) for d in data)
 
     def save(self):
         api = TASClient()
