@@ -299,6 +299,16 @@ class TASClient:
         else:
             raise Exception( 'Failed to update allocation', resp['message'] )
 
+    def create_allocation(self, allocation):
+        url = '{0}/v1/allocations'.format( self.baseURL )
+        headers = { 'Content-Type':'application/json' }
+        r = requests.put( url, data=json.dumps( allocation ), auth=self.auth, headers=headers )
+        resp = r.json()
+        if resp['status'] == 'success':
+            return resp['result']
+        else:
+            raise Exception( 'Failed to create allocation', resp['message'] )
+
     """
     Project Users
     """
