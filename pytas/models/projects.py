@@ -99,6 +99,7 @@ class Project(base.TASModel):
 class Allocation(base.TASModel):
     _resource_uri = 'allocations/'
     _fields = [
+        'computeUsed',
         'computeAllocated',
         'computeRequested',
         'dateRequested',
@@ -107,6 +108,7 @@ class Allocation(base.TASModel):
         'end',
         'id',
         'justification',
+        'memoryUsed',
         'memoryAllocated',
         'memoryRequested',
         'project',
@@ -119,6 +121,7 @@ class Allocation(base.TASModel):
         'reviewerId',
         'start',
         'status',
+        'storageUsed',
         'storageAllocated',
         'storageRequested',
     ]
@@ -129,6 +132,14 @@ class Allocation(base.TASModel):
 
     def __populate(self, data):
         self.__dict__.update(data)
+
+    @property
+    def percentComputeUsed(self):
+        used = getattr(self, 'computeUsed', 0)
+        alloc = getattr(self, 'computeAllocated', 0)
+        if alloc > 0:
+            return used / alloc
+
 
 
 class AllocationApproval(object):
