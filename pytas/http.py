@@ -22,7 +22,7 @@ class TASClient:
     """
     def __init__(self, baseURL = None, credentials = None):
         if (baseURL == None):
-            baseURL = os.environ.get('TAS_URL')
+            baseURL = os.environ.get('TAS_URL', 'https://example.com/api')
 
         if (credentials == None):
             key = os.environ.get('TAS_CLIENT_KEY')
