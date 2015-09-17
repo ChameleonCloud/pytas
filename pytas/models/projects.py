@@ -20,6 +20,7 @@ class Project(base.TASModel):
     _fields = [
         'id',
         'title',
+        'chargeCode',
         'typeId',
         'description',
         'source',
@@ -49,6 +50,11 @@ class Project(base.TASModel):
 
     def __str__(self):
         return getattr(self, 'chargeCode', '<new project>')
+
+    def as_dict(self):
+        proj_dict =  {f:getattr(self, f, None) for f in self._fields}
+        proj_dict['allocations'] = [a.as_dict() for a in self.allocations]
+        return proj_dict
 
     @classmethod
     def list(cls, username=None, group=None):
