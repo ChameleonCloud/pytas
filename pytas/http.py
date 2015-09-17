@@ -302,7 +302,7 @@ class TASClient:
     def create_allocation(self, allocation):
         url = '{0}/v1/allocations'.format( self.baseURL )
         headers = { 'Content-Type':'application/json' }
-        r = requests.put( url, data=json.dumps( allocation ), auth=self.auth, headers=headers )
+        r = requests.post( url, data=json.dumps( allocation ), auth=self.auth, headers=headers )
         resp = r.json()
         if resp['status'] == 'success':
             return resp['result']
