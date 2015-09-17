@@ -235,13 +235,19 @@ class TASClient:
         if resp['status'] == 'success':
             return resp['result']
         else:
-            raise Exception('Projects not found', resp['message'])
+            raise Exception('Projects not found: %s' % resp['message'])
 
     def project( self, id ):
         headers = { 'Content-Type':'application/json' }
         r = requests.get( '{0}/v1/projects/{1}'.format(self.baseURL, id), headers=headers, auth=self.auth )
-        resp = r.json()
-        return resp['result']
+        if r.status_code == 200:
+            resp = r.json()
+            if resp['status'] == 'success':
+                return resp['result']
+            else:
+                raise Exception('API Error: %s' % resp['message'])
+        else:
+            r.raise_for_status()
 
     def projects_for_user( self, username ):
         headers = { 'Content-Type':'application/json' }
