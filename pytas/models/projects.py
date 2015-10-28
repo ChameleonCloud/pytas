@@ -138,7 +138,8 @@ class Allocation(base.TASModel):
         used = getattr(self, 'computeUsed', 0)
         alloc = getattr(self, 'computeAllocated', 0)
         if alloc > 0:
-            return used / alloc
+            return (used / alloc) * 100
+        return 0
 
 
 
