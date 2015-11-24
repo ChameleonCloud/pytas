@@ -35,7 +35,7 @@ requires = [
 
 setup(
     name='pytas',
-    version='0.1.0',
+    version='1.0.2',
     description='Python package for TAS integration',
     long_description=readme,
     author='Matthew Hanlon',
