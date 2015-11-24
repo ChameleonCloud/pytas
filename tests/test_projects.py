@@ -11,18 +11,15 @@ Tests for `Projects` module.
 import os
 import pytest
 import json
-import httpretty
+import mock
 
 from pytas.models import Project
 
 class TestProjects:
 
-    @httpretty.activate
-    def test_get(self):
-        json_response = """
-        {
-            "message": null,
-            "result": {
+    @mock.patch('pytas.http.TASClient.project')
+    def test_get(self, mock_project):
+        mock_project.return_value = {
                 "allocations": [
                     {
                         "computeAllocated": 50000,
@@ -30,19 +27,19 @@ class TestProjects:
                         "computeUsed": 52774.149,
                         "dateRequested": "2014-01-20T19:00:12Z",
                         "dateReviewed": "2014-01-20T19:00:12Z",
-                        "decisionSummary": "Automatic TG AMIE approval.",
+                        "decisionSummary": "Project Approved.",
                         "end": "2015-01-20T06:00:00Z",
-                        "id": 22119,
-                        "justification": "TeraGrid 'New' allocation.",
+                        "id": 456,
+                        "justification": "Resource justification.",
                         "memoryAllocated": 0,
                         "memoryRequested": 0,
-                        "project": "TG-MCB140064",
+                        "project": "TEST-123456",
                         "projectId": 23567,
-                        "requestor": "Lane Votapka",
-                        "requestorId": 17033,
+                        "requestor": "PI User",
+                        "requestorId": 123000,
                         "resource": "Stampede3",
                         "resourceId": 31,
-                        "reviewer": null,
+                        "reviewer": None,
                         "reviewerId": 0,
                         "start": "2014-01-21T06:00:00Z",
                         "status": "Active",
@@ -50,10 +47,10 @@ class TestProjects:
                         "storageRequested": 0
                     }
                 ],
-                "chargeCode": "lorem-ipsum",
-                "description": "Lorem ipsum.",
-                "field": "Biophysics",
-                "fieldId": 105,
+                "chargeCode": "TEST-123456",
+                "description": "TEST-123456",
+                "field": "Testing",
+                "fieldId": 100,
                 "gid": 123000,
                 "id": 123,
                 "pi": {
@@ -61,7 +58,7 @@ class TestProjects:
                     "citizenshipId": 230,
                     "country": "United States",
                     "countryId": 230,
-                    "department": null,
+                    "department": None,
                     "departmentId": 0,
                     "email": "pi.user@example.com",
                     "emailConfirmations": [],
@@ -70,10 +67,10 @@ class TestProjects:
                     "institution": "University College",
                     "institutionId": 999,
                     "lastName": "User",
-                    "phone": null,
+                    "phone": None,
                     "piEligibility": "Eligible",
                     "source": "Standard",
-                    "title": null,
+                    "title": None,
                     "username": "piuser"
                 },
                 "piId": 999999,
@@ -81,24 +78,15 @@ class TestProjects:
                 "title": "Lorem ipsum",
                 "type": "Research",
                 "typeId": 0
-            },
-            "status": "success"
-        }
-        """
-        httpretty.register_uri(httpretty.GET,
-                               'https://example.com/api/v1/projects/123',
-                               body=json_response, content_type='application/json')
+            }
 
         p = Project(123)
         assert p.id == 123
 
-    @httpretty.activate
-    def test_bad_id(self):
-        httpretty.register_uri(httpretty.GET,
-                               'https://example.com/api/v1/projects/123',
-                               body='{"status":"error","result":null,"message":"Does not exist"}',
-                               content_type='application/json')
+    @mock.patch('pytas.http.TASClient.project')
+    def test_bad_id(self, mock_project):
+        mock_project.side_effect = Exception('API Error: Object reference not set to an instance of an object.')
 
         with pytest.raises(Exception) as e:
             p = Project(123)
-            assert 'Does not exist' in str(e.value)
+            assert 'API Error' in str(e.value)

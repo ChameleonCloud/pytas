@@ -189,7 +189,7 @@ class TASClient:
 
 
     def get_department(self, institution_id, department_id):
-        return get_institution(department_id)
+        return self.get_institution(department_id)
 
 
     def _departments(self, departments):
