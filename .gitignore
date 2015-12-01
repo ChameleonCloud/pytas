@@ -1,5 +1,5 @@
 docker.env
-
+.cache
 *.py[cod]
 
 # C extensions

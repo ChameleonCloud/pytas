@@ -28,10 +28,7 @@ if sys.argv[-1] == 'publish':
 
 readme = open('README.rst').read()
 
-requires = [
-    'requests',
-    'suds',
-]
+requires = [r for r in open('requirements.txt').readlines()]
 
 setup(
     name='pytas',
