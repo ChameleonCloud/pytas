@@ -85,10 +85,11 @@ class TASClient:
 
     def verify_user(self, user_id, code, password=None):
         url = '{0}/v1/users/{1}/{2}'.format(self.baseURL, user_id, code)
-        data = None
         if password:
             data = {'password': password}
-        r = requests.put(url, data=data, auth=self.auth)
+            r = requests.post(url, data=data, auth=self.auth)
+        else:
+            r = requests.put(url, auth=self.auth)
         resp = r.json()
         if resp['status'] == 'success':
             return True
