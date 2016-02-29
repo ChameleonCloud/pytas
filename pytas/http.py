@@ -83,14 +83,17 @@ class TASClient:
             else:
                 raise Exception('Unable to save new user', resp['message'])
 
-    def verify_user(self, id, code):
-        url = '{0}/v1/users/{1}/{2}'.format( self.baseURL, id, code )
-        r = requests.put( url, auth=self.auth )
+    def verify_user(self, user_id, code, password=None):
+        url = '{0}/v1/users/{1}/{2}'.format(self.baseURL, user_id, code)
+        data = None
+        if password:
+            data = {'password': password}
+        r = requests.put(url, data=data, auth=self.auth)
         resp = r.json()
         if resp['status'] == 'success':
             return True
         else:
-            raise Exception( 'Error verifying user id={0}'.format( id ), resp['message'] )
+            raise Exception('Error verifying user id={0}'.format(user_id), resp['message'])
 
     def request_password_reset( self, username, source=None ):
         if source:
