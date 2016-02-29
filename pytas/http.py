@@ -49,20 +49,25 @@ class TASClient:
     """
     Users
     """
-    def get_user(self, id = None, username = None):
+    def get_user(self, id=None, username=None, email=None):
         if id:
             url = '{0}/v1/users/{1}'.format(self.baseURL, id)
         elif username:
             url = '{0}/v1/users/username/{1}'.format(self.baseURL, username)
+        elif email:
+            url = '{0}/tup/users/email/{1}'.format(self.baseURL, email)
         else:
-            raise Exception('username or id is required!')
+            raise Exception('username, email, or id is required!')
 
-        r = requests.get(url, auth=self.auth);
-        resp = r.json()
-        if resp['status'] == 'success':
-            return resp['result']
+        r = requests.get(url, auth=self.auth)
+        if r.ok:
+            resp = r.json()
+            if resp['status'] == 'success':
+                return resp['result']
+            else:
+                raise Exception('Error: %s' % resp['message'])
         else:
-            raise Exception('User not found', resp['message'])
+            r.raise_for_status()
 
     def save_user(self, id, user):
         if id:
