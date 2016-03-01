@@ -132,6 +132,25 @@ class TASClient:
         else:
             raise Exception( 'Failed password reset for user={0}'.format( username ), 'Server Error' )
 
+    def change_password(self, username, current_password, new_password):
+        url = '{0}/v1/users/{1}/passwordChanges'.format(self.baseURL, username)
+        body = {
+            'password': current_password,
+            'newPassword': new_password
+        }
+        headers = {'Content-Type':'application/json'}
+        r = requests.post(url, data=json.dumps(body), auth=self.auth, headers=headers)
+        if r.ok:
+            resp = r.json()
+            if resp['status'] == 'success':
+                return True
+            else:
+                raise Exception('Failed password change for user={0}'.format(username),
+                                resp['message'])
+        else:
+            raise Exception('Failed password change for user={0}'.format(username),
+                            'Server Error')
+
     """
     Data Lists
     Institutions/Departments
