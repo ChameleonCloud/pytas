@@ -32,7 +32,7 @@ requires = [r for r in open('requirements.txt').readlines()]
 
 setup(
     name='pytas',
-    version='1.0.3',
+    version='1.2.0',
     description='Python package for TAS integration',
     long_description=readme,
     author='Matthew Hanlon',
