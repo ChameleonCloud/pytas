@@ -221,7 +221,8 @@ class TASClient:
         for c in resp.Country:
             countries.append({
                 'id': c.ID,
-                'name': c.Name
+                'name': c.Name,
+                'abbrev': c.ISOCode,
             })
 
         return countries
