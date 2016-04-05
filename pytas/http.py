@@ -383,3 +383,68 @@ class TASClient:
             return resp['result']
         else:
             raise Exception( 'Unable to process allocation approval for allocation id:'.format( id ), resp['message'] )
+
+        """
+        Client class for the TAS REST APIs.
+        """
+
+class JobsClient:
+
+    """
+    Instantiate the API Object with a base URI and service account credentials.
+    The credentials should be a hash with keys `username` and `password` for
+    BASIC Auth.
+
+    This gets a seperate class from the regular TAS functions because everything about this endpoint is completely different.
+    """
+
+    def __init__(self, baseURL=None, credentials=None):
+        if (baseURL == None):
+            baseURL = os.environ.get('JOBS_URL', 'https://example.com/api')
+
+        if (credentials == None):
+            key = os.environ.get('JOBS_USER')
+            secret = os.environ.get('JOBS_PASSWORD')
+            credentials = {'username': key, 'password': secret}
+
+        self.baseURL = baseURL
+        self.credentials = credentials
+        self.auth = HTTPBasicAuth(credentials['username'], credentials['password'])
+
+    """
+    Jobs
+    """
+    def get_jobs(self, resource=None, start=None, end=None, allocation_id=None, username=None, queue=None):
+        logger.debug("Getting jobs!")
+        if resource is None:
+            raise Exception('Resource is required.')
+        if start is None:
+            raise Exception('Start date is required')
+        if end is None:
+            raise Exception('End date is required')
+        logger.debug(resource + ", start= " + start + ", end = " + end)
+        method = 'GET'
+        headers = {'Content-Type': 'application/json'}
+        if allocation_id is not None:
+            if username is not None:
+                if queue is not None:
+                    url = '{0}/v1/Jobs?resource={1}&start={2}&end={3}&allocationId={4}&username={5}&queueId={6}'.format(self.baseURL, resource, start, end, allocation_id, username,
+                                                                                  queue)
+                else:
+                    url = '{0}/v1/Jobs?resource={1}&start={2}&end={3}&allocationId={4}&username={5}'.format(self.baseURL, resource, start, end, allocation_id, username)
+            elif queue is not None:
+                url = '{0}/v1/Jobs?resource={1}&start={2}&end={3}&allocationId={4}&queueId={5}'.format(self.baseURL, resource, start, end, allocation_id, queue)
+            else:
+                url = '{0}/v1/Jobs?resource={1}&start={2}&end={3}&allocationId={4}'.format(self.baseURL, resource, start, end, allocation_id)
+        else:
+            url = '{0}/v1/Jobs?resource={1}&start={2}&end={3}'.format(self.baseURL, resource, start, end,)
+        logger.debug(url)
+        r = requests.request(method, url, auth=self.auth, headers=headers, timeout=30)
+        logger.debug(r)
+        resp = json.loads(r.json())
+        logger.debug(resp)
+        #if resp['status'] == 'success':
+        if r.status_code == 200:
+            return resp['jobs']
+        else:
+            raise Exception('Unable to get jobs for username: {0}'.format(username), resp['message'])
