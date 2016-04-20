@@ -428,12 +428,12 @@ class JobsClient:
         if allocation_id is not None:
             if username is not None:
                 if queue is not None:
-                    url = '{0}/v1/Jobs?resource={1}&start={2}&end={3}&allocationId={4}&username={5}&queueId={6}'.format(self.baseURL, resource, start, end, allocation_id, username,
+                    url = '{0}/v1/Jobs?resource={1}&start={2}&end={3}&allocationId={4}&username={5}&queueName={6}'.format(self.baseURL, resource, start, end, allocation_id, username,
                                                                                   queue)
                 else:
                     url = '{0}/v1/Jobs?resource={1}&start={2}&end={3}&allocationId={4}&username={5}'.format(self.baseURL, resource, start, end, allocation_id, username)
             elif queue is not None:
-                url = '{0}/v1/Jobs?resource={1}&start={2}&end={3}&allocationId={4}&queueId={5}'.format(self.baseURL, resource, start, end, allocation_id, queue)
+                url = '{0}/v1/Jobs?resource={1}&start={2}&end={3}&allocationId={4}&queueName={5}'.format(self.baseURL, resource, start, end, allocation_id, queue)
             else:
                 url = '{0}/v1/Jobs?resource={1}&start={2}&end={3}&allocationId={4}'.format(self.baseURL, resource, start, end, allocation_id)
         else:
