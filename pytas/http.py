@@ -439,7 +439,7 @@ class JobsClient:
         else:
             url = '{0}/v1/Jobs?resource={1}&start={2}&end={3}'.format(self.baseURL, resource, start, end,)
         logger.debug(url)
-        r = requests.request(method, url, auth=self.auth, headers=headers, timeout=30)
+        r = requests.request(method, url, auth=self.auth, headers=headers)
         logger.debug(r)
         resp = json.loads(r.json())
         logger.debug(resp)
