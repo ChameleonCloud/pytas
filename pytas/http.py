@@ -440,7 +440,9 @@ class JobsClient:
         else:
             url = '{0}/v1/Jobs?resource={1}&start={2}&end={3}'.format(self.baseURL, resource, start, end,)
         logger.debug(url)
+        print(url)
         r = requests.request(method, url, auth=self.auth, headers=headers)
+        print(r)
         resp = r.json()
         #if resp['status'] == 'success':
         if r.status_code == 200:
