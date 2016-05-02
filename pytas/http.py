@@ -443,7 +443,7 @@ class JobsClient:
         logger.debug(params)
         print(url)
         print(params)
-        r = requests.request(method, url, auth=self.auth, headers=headers)
+        r = requests.request(method, url, params=params, auth=self.auth, headers=headers)
         print(r)
         resp = r.json()
         #if resp['status'] == 'success':
