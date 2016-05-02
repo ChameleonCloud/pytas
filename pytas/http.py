@@ -414,7 +414,6 @@ class JobsClient:
     """
     Jobs
     """
-    # TODO update the URLS so you're not using that dumb format stuff, it should be passed as params...there's a good way to do this with requests
     def get_jobs(self, resource=None, start=None, end=None, allocation_id=None, username=None, queue=None):
         logger.debug("Getting jobs!")
         if resource is None:
@@ -426,21 +425,24 @@ class JobsClient:
         logger.debug(resource + ", start= " + start + ", end = " + end)
         method = 'GET'
         headers = {'Content-Type': 'application/json'}
+
+        url = '{0}/v1/Jobs'.format(self.baseURL)
+        # always required!
+        params = {'resource': resource, 'start': start, 'end': end}
+
         if allocation_id is not None:
-            if username is not None:
-                if queue is not None:
-                    url = '{0}/v1/Jobs?resource={1}&start={2}&end={3}&allocationId={4}&username={5}&queueName={6}'.format(self.baseURL, resource, start, end, allocation_id, username,
-                                                                                  queue.upper())
-                else:
-                    url = '{0}/v1/Jobs?resource={1}&start={2}&end={3}&allocationId={4}&username={5}'.format(self.baseURL, resource, start, end, allocation_id, username)
-            elif queue is not None:
-                url = '{0}/v1/Jobs?resource={1}&start={2}&end={3}&allocationId={4}&queueName={5}'.format(self.baseURL, resource, start, end, allocation_id, queue.upper())
-            else:
-                url = '{0}/v1/Jobs?resource={1}&start={2}&end={3}&allocationId={4}'.format(self.baseURL, resource, start, end, allocation_id)
-        else:
-            url = '{0}/v1/Jobs?resource={1}&start={2}&end={3}'.format(self.baseURL, resource, start, end,)
+            params['allocation_id'] = allocation_id
+
+        if username is not None:
+            params['username'] = username
+
+        if queue is not None:
+            params['queueName'] = queue
+
         logger.debug(url)
+        logger.debug(params)
         print(url)
+        print(params)
         r = requests.request(method, url, auth=self.auth, headers=headers)
         print(r)
         resp = r.json()
