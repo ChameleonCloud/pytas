@@ -431,7 +431,7 @@ class JobsClient:
         params = {'resource': resource, 'start': start, 'end': end}
 
         if allocation_id is not None:
-            params['allocation_id'] = allocation_id
+            params['allocationId'] = allocation_id
 
         if username is not None:
             params['username'] = username
