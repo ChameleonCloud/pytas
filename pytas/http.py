@@ -5,7 +5,6 @@ import os
 import re
 import requests
 from requests.auth import HTTPBasicAuth
-from suds.client import Client as Suds
 import logging
 
 logger = logging.getLogger(__name__)
@@ -232,19 +231,16 @@ class TASClient:
         return depts
 
     def countries(self):
-        url = re.sub(r'/api[\-a-z]*$', '/TASWebService/PortalService.asmx?wsdl', self.baseURL)
-        api = Suds(url, username=self.credentials['username'], password=self.credentials['password'])
-        resp = api.service.GetCountries()
-        countries = []
-
-        for c in resp.Country:
-            countries.append({
-                'id': c.ID,
-                'name': c.Name,
-                'abbrev': c.ISOCode,
-            })
-
-        return countries
+        url = '{0}/v1/countries/'.format(self.baseURL)
+        r = requests.get(url, auth=self.auth, headers={'Content-Type':'application/json'})
+        if r.status_code == 200:
+            resp = r.json()
+            if resp['status'] == 'success':
+                return resp['result']
+            else:
+                raise Exception('Failed to fetch country list: %s' % resp['message'])
+        else:
+            raise Exception('Failed to fetch country list: %s' % 'Server error')
 
     """
     Fields
