@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
-from setuptools import setup
+from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
 import os
@@ -38,9 +38,7 @@ setup(
     author='Matthew Hanlon',
     author_email='mrhanlon@tacc.utexas.edu',
     url='https://github.com/mrhanlon/pytas',
-    packages=[
-        'pytas',
-    ],
+    packages=find_packages(),
     package_dir={'pytas':
                  'pytas'},
     include_package_data=True,
