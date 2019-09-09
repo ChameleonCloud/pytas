@@ -4,6 +4,8 @@
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
+from pytas import __version__
+
 import os
 import sys
 
@@ -30,7 +32,7 @@ requires = [r for r in open('requirements.txt').readlines()]
 
 setup(
     name='pytas',
-    version='1.2.0',
+    version=__version__,
     description='Python package for TAS integration',
     long_description=readme,
     author='Matthew Hanlon',
