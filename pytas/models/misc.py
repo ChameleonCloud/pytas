@@ -1,4 +1,4 @@
-import .base
+from pytas.models import base
 from pytas.http import TASClient
 
 class Institution(base.TASModel):

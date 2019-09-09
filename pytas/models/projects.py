@@ -3,8 +3,7 @@
 #
 #
 ###
-import .base
-import .users
+from pytas.models import base, users
 from pytas.http import TASClient
 
 PROJECT_TYPES = (
