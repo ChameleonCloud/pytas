@@ -3,8 +3,8 @@
 #
 #
 ###
-import base
-import projects
+import .base
+import .projects
 from pytas.http import TASClient
 
 class User(base.TASModel):

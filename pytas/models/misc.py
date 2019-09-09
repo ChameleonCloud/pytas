@@ -1,4 +1,4 @@
-import base
+import .base
 from pytas.http import TASClient
 
 class Institution(base.TASModel):
@@ -55,5 +55,3 @@ class Department(base.TASModel):
 
     def __populate(self, data):
         self.__dict__.update(data)
-
-
