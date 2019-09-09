@@ -437,10 +437,7 @@ class JobsClient:
 
         logger.debug(url)
         logger.debug(params)
-        print(url)
-        print(params)
         r = requests.request(method, url, params=params, auth=self.auth, headers=headers)
-        print(r)
         resp = r.json()
         #if resp['status'] == 'success':
         if r.status_code == 200:
