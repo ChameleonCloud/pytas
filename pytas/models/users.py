@@ -3,7 +3,7 @@
 #
 #
 ###
-from pytas.models import base, projects
+from pytas.models import base
 from pytas.http import TASClient
 
 class User(base.TASModel):
@@ -37,7 +37,7 @@ class User(base.TASModel):
             api = TASClient()
             project_data = api.projects_for_user(username=self.username)
             for d in project_data:
-                _projects.append(projects.Project(initial=d))
+                _projects.append(Project(initial=d))
         return _projects
 
     def save(self):
