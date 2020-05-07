@@ -3,6 +3,7 @@
 #
 #
 ###
+from datetime import datetime
 from pytas.models import base, users
 from pytas.http import TASClient
 
@@ -13,6 +14,8 @@ PROJECT_TYPES = (
     (1, 'Institutional'),
     (6, 'Partner'),
 )
+
+RENEWAL_START_WINDOW = 90
 
 class Project(base.TASModel):
     _resource_uri = 'projects/'
@@ -93,7 +96,45 @@ class Project(base.TASModel):
         api = TASClient()
         return api.del_project_user(self.id, username)
 
+    @property
+    def active_allocations(self):
+        return [a for a in self.allocations if a.status == 'Active' and a.resource == 'Chameleon']
 
+    @property
+    def has_active_allocations(self):
+        return len(self.active_allocations) > 0
+
+    @property
+    def inactive_allocations(self):
+        return [a for a in self.allocations if a.status == 'Inactive' and a.resource == 'Chameleon']
+
+    @property
+    def has_inactive_allocations(self):
+        return len(self.inactive_allocations) > 0
+
+    @property
+    def approved_allocations(self):
+        return [a for a in self.allocations if a.status == 'Approved' and a.resource == 'Chameleon']
+
+    @property
+    def has_approved_allocations(self):
+        return len(self.approved_allocations) > 0
+
+    @property
+    def pending_allocations(self):
+        return [a for a in self.allocations if a.status == 'Pending' and a.resource == 'Chameleon']
+
+    @property
+    def has_pending_allocations(self):
+        return len(self.pending_allocations) > 0
+
+    @property
+    def rejected_allocations(self):
+        return [a for a in self.allocations if a.status == 'Rejected' and a.resource == 'Chameleon']
+
+    @property
+    def has_rejected_allocations(self):
+        return len(self.rejected_allocations) > 0
 
 class Allocation(base.TASModel):
     _resource_uri = 'allocations/'
@@ -140,7 +181,18 @@ class Allocation(base.TASModel):
             return (used / alloc) * 100
         return 0
 
+    @property
+    def days_left(self):
+        return (self.end - datetime.utcnow()).days
 
+    @property
+    def up_for_renewal(self):
+        days_left = self.days_left
+        return days_left >= 0 and days_left <= RENEWAL_START_WINDOW
+
+    @property
+    def renewal_days(self):
+        return self.days_left
 
 class AllocationApproval(object):
     pass
