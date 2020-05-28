@@ -177,7 +177,7 @@ class Allocation(base.TASModel):
     def percentComputeUsed(self):
         used = getattr(self, 'computeUsed', 0)
         alloc = getattr(self, 'computeAllocated', 0)
-        if alloc > 0:
+        if alloc > 0 and used:
             return (used / alloc) * 100
         return 0
 
