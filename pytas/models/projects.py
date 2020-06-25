@@ -29,6 +29,7 @@ class Project(base.TASModel):
         'fieldId',
         'piId',
         'allocations',
+        'nickname',
     ]
 
     def __populate(self, data):
