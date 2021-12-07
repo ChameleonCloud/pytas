@@ -125,6 +125,10 @@ class Project(base.TASModel):
         return [a for a in self.allocations if a.status == 'Pending' and a.resource == 'Chameleon']
 
     @property
+    def waiting_allocations(self):
+        return [a for a in self.allocations if a.status == 'Waiting' and a.resource == 'Chameleon']
+
+    @property
     def has_pending_allocations(self):
         return len(self.pending_allocations) > 0
 
