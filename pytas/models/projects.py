@@ -130,7 +130,7 @@ class Project(base.TASModel):
 
     @property
     def has_pending_allocations(self):
-        return len(self.pending_allocations) > 0
+        return len(self.pending_allocations) + len(self.waiting_allocations) > 0
 
     @property
     def rejected_allocations(self):
